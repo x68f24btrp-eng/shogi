@@ -1,33 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head>
-<meta charset="UTF-8">
-<title>Shogi</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Shogi</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="game-container">
+      <div id="yourBoard" class="motigoma-board-you"></div>
+      <div id="board" class="shogi-board"></div>
+      <div id="myBoard" class="motigoma-board-me"></div>
+    </div>
 
-<h1>将棋</h1>
-<div id="turn"></div>
-
-<div class="area">
-<div>
-<h3>後手 持ち駒</h3>
-<div id="goteHand" class="hand"></div>
-</div>
-
-<div id="board"></div>
-
-<div>
-<h3>先手 持ち駒</h3>
-<div id="senteHand" class="hand"></div>
-</div>
-</div>
-
-<script src="board.js"></script>
-<script src="engine.js"></script>
-<script src="game.js"></script>
-<script src="main.js"></script>
-
-</body>
+    <script src="sisaku.js"></script>
+    <script src="engine.js"></script>
+    <script src="game.js"></script>
+    <script src="main.js"></script>
+  </body>
 </html>
