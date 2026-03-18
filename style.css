@@ -1,42 +1,127 @@
-body {
-    text-align: center;
-    font-family: sans-serif;
+.game-container {
+  display: grid;
+  align-items: center;
 }
 
-.area {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
+.shogi-board {
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  width: 693px;
+  height: 693px;
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
 }
 
-#board {
-    display: grid;
-    grid-template-columns: repeat(9, 60px);
-    grid-template-rows: repeat(9, 60px);
+.motigoma-board-me {
+  width: 693px;
+  height: 77px;
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
 }
 
-.cell {
-    border: 1px solid black;
-    background: #f0c987;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.motigoma-board-you {
+  width: 693px;
+  height: 77px;
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
 }
 
-.cell img {
-    width: 50px;
+.plane {
+  background-color: rgb(248, 185, 67);
+  border: 1px solid #000000;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex; /* 中身を自由に並べるモードにする */
+  justify-content: center; /* 横方向の真ん中 */
+  align-items: center; /* 縦方向の真ん中 */
 }
 
-.selected { background: orange; }
-.move { background: lightgreen; }
+.shade {
+  background-color: rgb(248, 185, 67);
+  border: 1px solid #000000;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex; /* 中身を自由に並べるモードにする */
+  justify-content: center; /* 横方向の真ん中 */
+  align-items: center; /* 縦方向の真ん中 */
+}
 
 .hand {
-    min-width: 120px;
-    min-height: 100px;
-    border: 1px solid black;
+  border: 1px solid #000000;
+  background-color: rgba(255, 153, 0, 0.466);
+  /*background-color: rgb(255, 153, 0);*/
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex; /* 中身を自由に並べるモードにする */
+  justify-content: center; /* 横方向の真ん中 */
+  align-items: center; /* 縦方向の真ん中 */
 }
 
-.hand img {
-    width: 40px;
-    cursor: pointer;
+.move {
+  border: 1px solid #000000;
+  background-color: rgb(255, 217, 147);
+  /*background-color: rgb(134, 255, 104);*/
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex; /* 中身を自由に並べるモードにする */
+  justify-content: center; /* 横方向の真ん中 */
+  align-items: center; /* 縦方向の真ん中 */
+}
+
+.moti-plane {
+  background-color: rgb(248, 185, 67);
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex; /* 中身を自由に並べるモードにする */
+  justify-content: center; /* 横方向の真ん中 */
+  align-items: center; /* 縦方向の真ん中 */
+}
+
+.moti-hand {
+  background-color: rgba(255, 153, 0, 0.466);
+  /*background-color: rgb(255, 153, 0);*/
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex; /* 中身を自由に並べるモードにする */
+  justify-content: center; /* 横方向の真ん中 */
+  align-items: center; /* 縦方向の真ん中 */
+}
+
+.nari {
+  border: 1px solid #000000;
+  background-color: rgb(0, 0, 0);
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex; /* 中身を自由に並べるモードにする */
+  justify-content: center; /* 横方向の真ん中 */
+  align-items: center; /* 縦方向の真ん中 */
+}
+
+.piece {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  pointer-events: none; /* 画像を無視して、下のマス目を触るようにする */
+}
+
+.piece-motigoma {
+  width: 10%;
+  height: 90%;
+}
+
+body {
+  margin: 0; /* ブラウザ特有の余白を消す */
+  display: flex; /* レイアウトモードをフレックスに変更 */
+  justify-content: center; /* 横方向の真ん中 */
+  align-items: center; /* 縦方向の真ん中 */
+  min-height: 100vh; /* 画面の高さ（View Height）100%分を確保 */
+  background-color: #a8a8a8; /* 背景を少しグレーにすると盤が目立つ */
 }
