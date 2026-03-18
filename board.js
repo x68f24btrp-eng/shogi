@@ -483,13 +483,16 @@ let motiDataY = initialmoti_Y.map((name) => {
 });
 
 //先手後手決め
-const hurigoma = Math.floor(Math.random() * 2);
+//const hurigoma = Math.floor(Math.random() * 2);
+//let zyunban;
+//if (hurigoma % 2 === 0) {
+  //zyunban = { me: 'sente', you: 'gote' };
+//} else {
+  //zyunban = { me: 'gote', you: 'sente' };
+//}
+
 let zyunban;
-if (hurigoma % 2 === 0) {
-  zyunban = { me: 'sente', you: 'gote' };
-} else {
-  zyunban = { me: 'gote', you: 'sente' };
-}
+zyunban = { me: 'sente', you: 'gote' };
 
 //なん手目か測定
 let counter = 1;
