@@ -6,12 +6,17 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="game-container">
-      <div id="yourBoard" class="motigoma-board-you"></div>
-      <div id="board" class="shogi-board"></div>
-      <div id="myBoard" class="motigoma-board-me"></div>
+    <div id="gameBoard" class="game-container">
+      <div id="restB" class="rest-board"></div>
+      <div id="fightBoard" class="fight-board"></div>
+      <div id="restA" class="rest-board"></div>
     </div>
 
-    <script src="board.js"></script>
+    <!--<script src="zzz.js"></script>-->
+
+    <script type="module" src="board.js"></script>
+    <script type="module" src="piece.js"></script>
+    <script type="module" src="cell.js"></script>
+    <script type="module" src="game.js"></script>
   </body>
 </html>
