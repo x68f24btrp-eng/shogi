@@ -1,33 +1,58 @@
+//盤面のデータ管理をする
+
+//ここを変えるとinitiakTypeも変わる　変えたやつがmoveRulesにないとダメ
+let AAA = ['Q', 'K', 'R', 'B', 'G', 'S', 'N', 'L', 'P'];
+
+let BBB = ['q', 'k', 'r', 'b', 'g', 's', 'n', 'l', 'p'];
+//P:歩,L:香,N:桂,S:銀,G:金,B:角,R:飛,K:王,Q:玉
+
+const AA = AAA[8];
+const BB = AAA[7];
+const CC = AAA[6];
+const DD = AAA[5];
+const EE = AAA[4];
+const FF = AAA[3];
+const GG = AAA[2];
+const HH = AAA[1];
+const II = AAA[0];
+const aa = BBB[8];
+const bb = BBB[7];
+const cc = BBB[6];
+const dd = BBB[5];
+const ee = BBB[4];
+const ff = BBB[3];
+const gg = BBB[2];
+const hh = BBB[1];
+const ii = BBB[0];
+
 const initialType = [
-  'l',
-  'n',
-  's',
-  'g',
-  'k',
-  'g',
-  's',
-  'n',
-  'l',
+  bb,
+  cc,
+  dd,
+  ee,
+  ii,
+  ee,
+  dd,
+  cc,
+  bb,
   null,
-  'r',
-  null,
-  null,
+  gg,
   null,
   null,
   null,
-  'b',
-  null,
-  'p',
-  'p',
-  'p',
-  'p',
-  'p',
-  'p',
-  'p',
-  'p',
-  'p',
   null,
   null,
+  ff,
+  null,
+  aa,
+  aa,
+  aa,
+  aa,
+  aa,
+  aa,
+  aa,
+  aa,
+  aa,
   null,
   null,
   null,
@@ -53,836 +78,568 @@ const initialType = [
   null,
   null,
   null,
-  'P',
-  'P',
-  'P',
-  'P',
-  'P',
-  'P',
-  'P',
-  'P',
-  'P',
-  null,
-  'B',
   null,
   null,
+  AA,
+  AA,
+  AA,
+  AA,
+  AA,
+  AA,
+  AA,
+  AA,
+  AA,
+  null,
+  FF,
   null,
   null,
   null,
-  'R',
   null,
-  'L',
-  'N',
-  'S',
-  'G',
-  'K',
-  'G',
-  'S',
-  'N',
-  'L'
+  null,
+  GG,
+  null,
+  BB,
+  CC,
+  DD,
+  EE,
+  HH,
+  EE,
+  DD,
+  CC,
+  BB
 ];
 
-const trialType = [
-  'l',
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  null,
-  'L'
-];
+const initialRestA = [...BBB, ...AAA];
 
-const initialmoti_Y = [null, 'k', 'r', 'b', 'g', 's', 'n', 'l', 'p'];
+const initialRestB = [...AAA, ...BBB];
 
-const initialmoti_M = [null, 'K', 'R', 'B', 'G', 'S', 'N', 'L', 'P'];
+import { fightBoard, restBoardA, restBoardB } from './game.js';
+import { Cell } from './cell.js';
+import { Piece } from './piece.js';
+import { moveRules } from './piece.js';
 
-const moveRules = {
-  p: { false: [[0, 1]], true: [] },
-  pe: {
-    false: [
-      [-1, 1],
-      [0, 1],
-      [1, 1],
-      [-1, 0],
-      [1, 0],
-      [0, -1]
-    ],
-    true: []
-  },
-  l: { false: [], true: [[0, 1]] },
-  le: {
-    false: [
-      [-1, 1],
-      [0, 1],
-      [1, 1],
-      [-1, 0],
-      [1, 0],
-      [0, -1]
-    ],
-    true: []
-  },
-  n: {
-    false: [
-      [-1, 2],
-      [1, 2]
-    ],
-    true: []
-  },
-  ne: {
-    false: [
-      [-1, 1],
-      [0, 1],
-      [1, 1],
-      [-1, 0],
-      [1, 0],
-      [0, -1]
-    ],
-    true: []
-  },
-  s: {
-    false: [
-      [-1, 1],
-      [0, 1],
-      [1, 1],
-      [-1, -1],
-      [1, -1]
-    ],
-    true: []
-  },
-  se: {
-    false: [
-      [-1, 1],
-      [0, 1],
-      [1, 1],
-      [-1, 0],
-      [1, 0],
-      [0, -1]
-    ],
-    true: []
-  },
-  g: {
-    false: [
-      [-1, 1],
-      [0, 1],
-      [1, 1],
-      [-1, 0],
-      [1, 0],
-      [0, -1]
-    ],
-    true: []
-  },
-  k: {
-    false: [
-      [-1, 1],
-      [0, 1],
-      [1, 1],
-      [-1, 0],
-      [1, 0],
-      [-1, -1],
-      [0, -1],
-      [1, -1]
-    ],
-    true: []
-  },
-  b: {
-    false: [],
-    true: [
-      [1, 1],
-      [1, -1],
-      [-1, 1],
-      [-1, -1]
-    ]
-  },
-  be: {
-    false: [
-      [0, 1],
-      [0, -1],
-      [1, 0],
-      [-1, 0]
-    ],
-    true: [
-      [1, 1],
-      [1, -1],
-      [-1, 1],
-      [-1, -1]
-    ]
-  },
-  r: {
-    false: [],
-    true: [
-      [0, 1],
-      [0, -1],
-      [1, 0],
-      [-1, 0]
-    ]
-  },
-  re: {
-    false: [
-      [-1, -1],
-      [1, -1],
-      [1, 1],
-      [-1, 1]
-    ],
-    true: [
-      [0, 1],
-      [0, -1],
-      [1, 0],
-      [-1, 0]
-    ]
-  },
-  P: { false: [[0, -1]], true: [] },
-  Pe: {
-    false: [
-      [-1, -1],
-      [0, -1],
-      [1, -1],
-      [-1, 0],
-      [1, 0],
-      [0, 1]
-    ],
-    true: []
-  },
-  L: { false: [], true: [[0, -1]] },
-  Le: {
-    false: [
-      [-1, -1],
-      [0, -1],
-      [1, -1],
-      [-1, 0],
-      [1, 0],
-      [0, 1]
-    ],
-    true: []
-  },
-  N: {
-    false: [
-      [-1, -2],
-      [1, -2]
-    ],
-    true: []
-  },
-  Ne: {
-    false: [
-      [-1, -1],
-      [0, -1],
-      [1, -1],
-      [-1, 0],
-      [1, 0],
-      [0, 1]
-    ],
-    true: []
-  },
-  Se: {
-    false: [
-      [-1, -1],
-      [0, -1],
-      [1, -1],
-      [-1, 0],
-      [1, 0],
-      [0, 1]
-    ],
-    true: []
-  },
-  S: {
-    false: [
-      [-1, -1],
-      [0, -1],
-      [1, -1],
-      [-1, 1],
-      [1, 1]
-    ],
-    true: []
-  },
-  G: {
-    false: [
-      [-1, -1],
-      [0, -1],
-      [1, -1],
-      [-1, 0],
-      [1, 0],
-      [0, 1]
-    ],
-    true: []
-  },
-  K: {
-    false: [
-      [-1, -1],
-      [0, -1],
-      [1, -1],
-      [-1, 0],
-      [1, 0],
-      [-1, 1],
-      [0, 1],
-      [1, 1]
-    ],
-    true: []
-  },
+let pieceAttack = []; //{ moveable: [], truemoveable: [], overlapSama: [], overlapOppose: [] }
+export let pieceData = []; //pieceIndexの順番にpieceクラスのインスタンスが入っている
+export let boardData = []; //cellIndexの順番にcellクラスのインスタンスが入っている
+export let attackA = []; //81マスそれぞれにあるAの駒の利きの数
+export let attackB = []; //81マスそれぞれにあるBの駒の利きの数
+let count = 0;
+let attackPA = [];
+let attackPB = [];
 
-  B: {
-    false: [],
-    true: [
-      [1, 1],
-      [1, -1],
-      [-1, 1],
-      [-1, -1]
-    ]
-  },
-  Be: {
-    false: [
-      [0, 1],
-      [0, -1],
-      [1, 0],
-      [-1, 0]
-    ],
-    true: [
-      [1, 1],
-      [1, -1],
-      [-1, 1],
-      [-1, -1]
-    ]
-  },
-  R: {
-    false: [],
-    true: [
-      [0, 1],
-      [0, -1],
-      [1, 0],
-      [-1, 0]
-    ]
-  },
-  Re: {
-    false: [
-      [-1, -1],
-      [1, -1],
-      [1, 1],
-      [-1, 1]
-    ],
-    true: [
-      [0, 1],
-      [0, -1],
-      [1, 0],
-      [-1, 0]
-    ]
-  }
-};
-
-let k_aim = false;
-
-const boardElement = document.getElementById('board');
-const yourBoard = document.getElementById('yourBoard');
-const myBoard = document.getElementById('myBoard');
-
-//typeとcssClassとownerの情報を追加
-let boardData = initialType.map((name) => {
-  if (name === null) return { type: null, cssClass: 'plane', owner: null };
-
-  return {
-    type: name,
-    cssClass: 'plane',
-    // 大文字ならme、小文字ならyou
-    owner: /[B-S]/.test(name) ? 'me' : 'you'
-  };
+//将棋盤とそれ上の駒表示
+initialType.forEach((data, _) => {
+  const cell = new Cell(boardData.length);
+  boardData.push(cell);
+  fightBoard.appendChild(cell.element);
+  cell.cssUpdate();
+  cell.element.dataset.index = cell.cellIndex;
+  if (data === null) return;
+  const piece = new Piece(cell.cellIndex, count, data.toUpperCase(), /[A-Z]/.test(data) ? 'playerA' : 'playerB');
+  pieceAttack.push({ moveable: [], truemoveable: [], overlapSame: [], overlapOppose: [] });
+  piece.condition = 'fight';
+  cell.intoPiece(piece);
+  pieceData.push(piece);
+  ++count;
 });
 
-const initialcount = 0;
-
-let motiDataM = initialmoti_M.map((name) => {
-  if (name === null) return { type: null, cssClass: 'moti-plane', owner: null, number: null };
-
-  return {
-    type: name,
-    cssClass: 'moti-plane',
-    number: initialcount,
-    owner: initialcount === 0 ? null : 'me'
-  };
+//持ち駒置き場を描画　ここでは駒は描画しない（まだimg作ってない）
+initialRestB.forEach(() => {
+  const cell = new Cell(boardData.length);
+  boardData.push(cell);
+  restBoardB.appendChild(cell.element);
+  cell.cssUpdate();
+  cell.element.dataset.index = cell.cellIndex;
 });
 
-let motiDataY = initialmoti_Y.map((name) => {
-  if (name === null) return { type: null, cssClass: 'moti-plane', owner: null, number: null };
-
-  return {
-    type: name,
-    cssClass: 'moti-plane',
-    number: initialcount,
-    owner: initialcount === 0 ? null : 'you'
-  };
+//持ち駒置き場を描画　ここでは駒は描画しない（まだimg作ってない）
+initialRestA.forEach(() => {
+  const cell = new Cell(boardData.length);
+  boardData.push(cell);
+  restBoardA.appendChild(cell.element);
+  cell.cssUpdate();
+  cell.element.dataset.index = cell.cellIndex;
 });
 
-//先手後手決め
-//const hurigoma = Math.floor(Math.random() * 2);
-//let zyunban;
-//if (hurigoma % 2 === 0) {
-  //zyunban = { me: 'sente', you: 'gote' };
-//} else {
-  //zyunban = { me: 'gote', you: 'sente' };
-//}
+const start = performance.now(); // 計測開始
 
-let zyunban;
-zyunban = { me: 'sente', you: 'gote' };
+//最初のpieceRelation更新
+pieceData.forEach((data, _) => {
+  nextMoveable(data, false, false);
+});
 
-//なん手目か測定
-let counter = 1;
-let teban;
+//利きを計測するために要素を81個つめる
+boardData.forEach((data, i) => {
+  if (i > 80) return;
+  attackA.push(0);
+  attackB.push(0);
+});
 
-//将棋盤を作る
 for (let i = 0; i < 9; ++i) {
-  const cell = document.createElement('div');
-  cell.classList.add('moti-plane');
-  cell.dataset.type = 'motiY';
-  cell.dataset.index = i;
-  yourBoard.appendChild(cell);
+  attackPA.push(0);
+  attackPB.push(0);
 }
 
+//最初の利きを計測
 for (let i = 0; i < 81; ++i) {
-  const cell = document.createElement('div');
-  cell.classList.add('plane');
-  cell.dataset.type = 'board';
-  cell.dataset.index = i;
-  boardElement.appendChild(cell);
-}
-
-for (let i = 0; i < 9; ++i) {
-  const cell = document.createElement('div');
-  cell.classList.add('moti-plane');
-  cell.dataset.type = 'motiM';
-  cell.dataset.index = i;
-  myBoard.appendChild(cell);
-}
-
-updateBoard();
-
-//将棋盤をデータ通りにする
-function updateBoard() {
-  boardData.forEach((data, i) => {
-    let cell = boardElement.children[i];
-    cell.innerHTML = '';
-    cell.className = data.cssClass;
-    if (data.type !== null) {
-      const piece = document.createElement('img');
-      piece.classList.add('piece');
-      cell.appendChild(piece);
-      piece.src = `images/${data.owner}/${data.type}.png`;
-    }
+  if (boardData[i].piece === null) continue;
+  const index = boardData[i].piece.pieceIndex;
+  if (boardData[i].piece.type === 'P') {
+    if (boardData[i].piece.owner === 'playerA') attackPA[boardData[i].cellIndex % 9] += 1;
+    else if (boardData[i].piece.owner === 'playerB') attackPB[boardData[i].cellIndex % 9] += 1;
+  }
+  pieceAttack[index]['moveable'].forEach((data, i) => {
+    if (boardData[i].piece.owner === 'playerA') attackA[data] += 1;
+    else if (boardData[i].piece.owner === 'playerB') attackB[data] += 1;
   });
 }
 
-//すべての持ち駒の描画処理  Storing(i) + 'M'
-function updateMotiBoard() {
-  motiDataM.forEach((data, i) => {
-    let cell = myBoard.children[i];
-    cell.innerHTML = '';
-    cell.className = data.cssClass;
-    if (data.number !== 0 && data.number !== null) {
-      const piece = document.createElement('img');
-      piece.classList.add('piece');
-      cell.appendChild(piece);
-      piece.src = `images/${data.owner}/${data.type}.png`;
-    }
-  });
-  motiDataY.forEach((data, i) => {
-    let cell = yourBoard.children[i];
-    cell.innerHTML = '';
-    cell.className = data.cssClass;
-    if (data.number !== 0 && data.number !== null) {
-      const piece = document.createElement('img');
-      piece.classList.add('piece');
-      cell.appendChild(piece);
-      piece.src = `images/${data.owner}/${data.type}.png`;
-    }
-  });
-}
+console.log(pieceAttack, attackPA, attackPB);
 
-//引数　駒の今いるindex番号　中でteban変数使ってる
-function movable(i) {
+const end = performance.now(); // 計測終了
+console.log(`処理時間: ${end - start}ms`); //nextmoveable分ける？
+
+//引数　そのコマ
+function nextMoveable(Piece, TorF1, TorF2) {
   let slide = 'false';
-  const x = i % 9;
-  const y = Math.floor(i / 9);
-  for (let j = 0; j < 2; ++j) {
-    for (let t = 0; t < moveRules[boardData[i].type][slide].length; ++t) {
-      let l = 1;
-      while (true) {
-        const targetx = x + l * moveRules[boardData[i].type][slide][t][0];
-        const targety = y + l * moveRules[boardData[i].type][slide][t][1];
-        if (targetx < 0 || 8 < targetx || targety < 0 || 8 < targety) {
-          break;
+  let overlap = 0;
+  const type = Piece.evolution === true ? Piece.type + 'e' : Piece.type;
+  let attack = pieceAttack[Piece.pieceIndex];
+  if (TorF1 === true) {
+    attack['moveable'] = [];
+    attack['truemoveable'] = [];
+  }
+  if (TorF2 === true) {
+    attack['overlapSame'] = [];
+    attack['overlapOppose'] = [];
+  }
+
+  let x = Piece.location % 9;
+  let y = Math.floor(Piece.location / 9);
+  if (Piece.condition === 'fight') {
+    for (let j = 0; j < 2; ++j) {
+      moveRules[type][slide].forEach((data, _) => {
+        overlap = 0;
+        let l = Piece.owner === 'playerA' ? 1 : -1;
+        while (true) {
+          const targetx = x + l * data[0];
+          const targety = y + l * data[1];
+
+          //console.log(x, y, l, data[1], targetx, targety);
+
+          if (targetx < 0 || 8 < targetx || targety < 0 || 8 < targety) {
+            break;
+          }
+          const targeti = targety * 9 + targetx;
+
+          if (boardData[targeti].piece === null) {
+            if (overlap === 0) attack['moveable'].push(targeti);
+            else if (overlap > 0) attack['truemoveable'].push(targeti);
+            if (slide === 'false') break;
+            if (l > 0) ++l;
+            else if (l < 0) --l;
+            continue;
+          }
+
+          if (boardData[targeti].piece.owner === Piece.owner) {
+            if (overlap === 0) pieceAttack[boardData[targeti].piece.pieceIndex]['overlapSame'].push(Piece.pieceIndex);
+            else if (overlap > 0) attack['truemoveable'].push(targeti);
+
+            if (slide === 'false') break;
+            ++overlap;
+            if (overlap === 2) break;
+            if (l > 0) ++l;
+            else if (l < 0) --l;
+            continue;
+
+            //break;
+          }
+
+          if (boardData[targeti].piece.owner !== Piece.owner) {
+            if (overlap === 0) {
+              attack['moveable'].push(targeti);
+              pieceAttack[boardData[targeti].piece.pieceIndex]['overlapOppose'].push(Piece.pieceIndex);
+            } else if (overlap > 0) attack['truemoveable'].push(targeti);
+
+            if (slide === 'false') break;
+            ++overlap;
+            if (overlap === 2) break;
+            if (l > 0) ++l;
+            else if (l < 0) --l;
+            continue;
+
+            //break;
+          }
         }
-        const targeti = targety * 9 + targetx;
-        if (zyunban[boardData[targeti].owner] === teban) {
-          break;
+      });
+      slide = 'true';
+    }
+  } else if (Piece.condition === 'rest') {
+    let l = Piece.owner === 'playerA' ? 1 : -1;
+    for (let j = 0; j < 81; ++j) {
+      if (boardData[j].piece !== null) continue;
+      let slide = 'false';
+      let x = j % 9;
+      let y = Math.floor(j / 9);
+      if (type === 'P') {
+        if (Piece.owner === 'playerA' && attackPA[x] !== 0) continue;
+        if (Piece.owner === 'playerB' && attackPB[x] !== 0) continue;
+      }
+      parent: for (let t = 0; t < 2; ++t) {
+        const data = moveRules[type][slide];
+        for (let f = 0; f < data.length; ++f) {
+          const targetx = x + l * data[f][0];
+          const targety = y + l * data[f][1];
+
+          //console.log(x, y, l, data[f][1], targetx, targety);
+
+          if (0 <= targetx && targetx <= 8 && 0 <= targety && targety <= 8) {
+            attack['moveable'].push(j);
+            break parent;
+          }
         }
-        boardData[targeti].cssClass = 'move';
-        if ((boardData[targeti].owner !== null && zyunban[boardData[targeti].owner] !== teban) || slide === 'false') {
-          break;
-        }
-        ++l;
+        slide = 'true';
       }
     }
-    slide = 'true';
   }
 }
 
-//マスのcssClassのデータをすべてplaneにする
-function cssPlane() {
-  for (let i = 0; i < boardData.length; ++i) {
-    if (boardData[i].cssClass !== 'plane') {
-      boardData[i].cssClass = 'plane';
-    }
-  }
-}
+import { observer } from './game.js';
 
-//マスのcssClassのデータをすべてshadeにする
-function cssShade() {
-  for (let i = 0; i < boardData.length; ++i) {
-    if (boardData[i].cssClass !== 'shade') {
-      boardData[i].cssClass = 'shade';
-    }
-  }
-}
+export function selectPiece(index, kinghand) {
+  boardData[index].cssClass = 'hand';
+  boardData[index].cssUpdate();
+  const hand = index;
 
-//マスのcssClassのデータをすべてmoveにする
-function cssMove() {
-  for (let i = 0; i < boardData.length; ++i) {
-    if (boardData[i].cssClass !== 'move') {
-      boardData[i].cssClass = 'move';
-    }
-  }
-}
+  //nextMoveable(boardData[index].piece, true);
+  //console.log(pieceAttack[boardData[index].piece.pieceIndex]);
 
-//持ち駒のマスのcssClassのデータをすべてmoti-planeにする
-function cssMotiplane() {
-  for (let i = 0; i < motiDataM.length; ++i) {
-    if (motiDataM[i].cssClass !== 'moti-plane') {
-      motiDataM[i].cssClass = 'moti-plane';
-    }
-  }
-  for (let i = 0; i < motiDataY.length; ++i) {
-    if (motiDataY[i].cssClass !== 'moti-plane') {
-      motiDataY[i].cssClass = 'moti-plane';
-    }
-  }
-}
+  //console.log(boardData[index].piece.condition);
 
-//駒をとるデータ処理　引数　駒が動こうとしてるindex番号　中でteban変数使ってる
-function rob(i) {
-  //成り駒は一文字目だけで判定
-  if (boardData[i].owner === 'you') {
-    for (let j = 0; j < 9; ++j) {
-      if (boardData[i].type.toUpperCase() === motiDataM[j].type) {
-        motiDataM[j].number = motiDataM[j].number + 1;
-        motiDataM[j].owner = 'me';
-        break;
+  if (boardData[index].piece.condition === 'rest') nextMoveable(boardData[index].piece, true, true);
+
+  let move = [];
+
+  if (kinghand === true) {
+    const indexmoveable = [...pieceAttack[boardData[index].piece.pieceIndex]['moveable']];
+    console.log(pieceAttack[boardData[index].piece.pieceIndex]['moveable']);
+
+    indexmoveable.forEach((data, i) => {
+      pieceAttack.forEach((d, _) => {
+        d['moveable'] = [];
+        d['truemoveable'] = [];
+        d['overlapSame'] = [];
+        d['overlapOppose'] = [];
+      });
+
+      console.log(boardData[data].piece, boardData[index].piece);
+
+      const retainToPiece = boardData[data].piece === null ? null : pieceData[boardData[data].piece.pieceIndex];
+      if (retainToPiece !== null) boardData[data].piece.condition = 'rest';
+      const retainLocation = boardData[index].piece.location;
+      boardData[index].piece.location = boardData[data].cellIndex;
+      boardData[data].piece = boardData[index].piece;
+      boardData[index].piece = null;
+
+      console.log(boardData[data].piece, boardData[index].piece);
+
+      pieceData.forEach((d, _) => {
+        if (d.condition === 'fight') nextMoveable(d, false, false);
+      });
+
+      console.log(
+        pieceAttack[pieceData[35].pieceIndex]['overlapOppose'],
+        pieceAttack[pieceData[4].pieceIndex]['overlapOppose']
+      );
+
+      if (
+        (observer.teban === 'playerA' && pieceAttack[pieceData[35].pieceIndex]['overlapOppose'].length === 0) ||
+        (observer.teban === 'playerB' && pieceAttack[pieceData[4].pieceIndex]['overlapOppose'].length === 0)
+      ) {
+        move.push(data);
       }
-    }
-  } else {
-    for (let j = 0; j < 9; ++j) {
-      if (boardData[i].type.toLowerCase() === motiDataY[j].type) {
-        motiDataY[j].number = motiDataY[j].number + 1;
-        motiDataY[j].owner = 'you';
-        break;
-      }
-    }
-  }
-}
 
-//成るかどうかの判定真偽値を返す　 引数　移動しようとしているマス目のindex番号
-function evolution(i) {
-  let data;
-  for (let j = 0; j < 81; ++j) {
-    if (boardData[j].cssClass === 'hand') {
-      data = boardData[j];
-      break;
-    }
-  }
-  if (data.type === 'G' || data.type === 'K' || data.type === 'g' || data.type === 'k') return false;
-  if ([...data.type].length !== 1) return false;
+      boardData[index].piece = boardData[data].piece;
+      boardData[index].piece.location = retainLocation;
+      boardData[data].piece = retainToPiece;
+      if (retainToPiece !== null) boardData[data].piece.condition = 'fight';
+      console.log(boardData[data].piece, boardData[index].piece);
+    });
 
-  const toy = Math.floor(i / 9);
+    pieceAttack.forEach((d, _) => {
+      d['moveable'] = [];
+      d['truemoveable'] = [];
+      d['overlapSame'] = [];
+      d['overlapOppose'] = [];
+    });
 
-  if ((data.owner === 'me' && toy < 3) || (data.owner === 'you' && toy >= 6)) {
-    if (nextMoveable(data.type, i).next === false) return true;
-    return confirm('成りますか？');
-  }
-}
+    pieceData.forEach((d, _) => nextMoveable(d, false, false));
 
-//引数　シングルコーテーション付きの駒の種類　戻り値　次移動できるマスがあるかないか
-//　　　移動するindex番号　　typeはもじれつ　　　　　　　　　　　　　（true or false）
-function nextMoveable(type, i) {
-  let nextMoveable = [];
-  let slide = 'false';
-  const fromx = i % 9;
-  const fromy = Math.floor(i / 9);
+    console.log(move);
+    move.forEach((data, _) => {
+      boardData[data].cssClass = 'move';
+      boardData[data].cssUpdate();
+    });
 
-  for (let j = 0; j < 2; ++j) {
-    moveRules[type][slide].forEach((data, index) => {
-      let l = 1;
-      while (true) {
-        const tox = fromx + l * data[0];
-        const toy = fromy + l * data[1];
-        if (tox < 0 || 8 < tox || toy < 0 || 8 < toy) {
-          break;
-        }
-        nextMoveable.push([9 * toy + tox]);
-        ++l;
+    console.log(pieceAttack[boardData[index].piece.pieceIndex]['moveable']);
+  } else if (kinghand === false) {
+    let aim = [];
+
+    pieceAttack[boardData[index].piece.pieceIndex]['overlapOppose'].forEach((data, i) => {
+      if (moveRules[pieceData[data].type].true.length !== 0) {
+        aim.push(data);
       }
     });
-    slide = 'true';
-  }
-  if (nextMoveable.length === 0) {
-    return { next: false, nextcell: nextMoveable };
-  } else {
-    return { next: true, nextcell: nextMoveable };
-  }
-}
 
-//駒が盤上に打たれたり盤上を移動するときのデータ処理（成り処理を含む）
-// 引数　駒がいこうとしてるcellのindex番号
-function transfer(i) {
-  let judge = null;
-  for (let j = 0; j < 9; ++j) {
-    if (motiDataY[j].cssClass === 'moti-hand') {
-      judge = true;
-      boardData[i].type = motiDataY[j].type;
-      boardData[i].owner = motiDataY[j].owner;
-      motiDataY[j].number -= 1;
-      if (motiDataY[j].number === 0) {
-        motiDataY[j].owner = null;
+    let scope;
+    let dx1;
+    let dy1;
+
+    parent: for (const d of aim) {
+      for (const dd of pieceAttack[d]['truemoveable']) {
+        if (
+          (boardData[index].piece.owner === 'playerA' && pieceData[35].location === dd) ||
+          (boardData[index].piece.owner === 'playerB' && pieceData[4].location === dd)
+        ) {
+          scope = d;
+
+          let Ex = pieceData[scope].location % 9;
+          let Ey = Math.floor(pieceData[scope].location / 9);
+
+          let Px = pieceData[index].location % 9;
+          let Py = Math.floor(pieceData[index].location / 9);
+
+          dx1 = Px - Ex;
+          if (dx1 !== 0) dx1 = dx1 / Math.abs(dx1);
+          dy1 = Py - Ey;
+          if (dy1 !== 0) dy1 = dy1 / Math.abs(dy1);
+
+          console.log(Px, Py, Ex, Ey, dx1, dy1);
+
+          break parent;
+        }
       }
-      break;
     }
-  }
-  for (let j = 0; j < 9; ++j) {
-    if (judge !== null) break;
-    if (motiDataM[j].cssClass === 'moti-hand') {
-      judge = true;
-      boardData[i].type = motiDataM[j].type;
-      boardData[i].owner = motiDataM[j].owner;
-      motiDataM[j].number -= 1;
-      if (motiDataM[j].number === 0) {
-        motiDataM[j].owner = null;
+
+    let between = [];
+
+    if (scope !== undefined && scope !== null) {
+      let Kx;
+      let Ky;
+      if (pieceData[scope].owner === 'playerA') {
+        Kx = pieceData[4].location % 9;
+        Ky = Math.floor(pieceData[4].location / 9);
+      } else if (pieceData[scope].owner === 'playerB') {
+        Kx = pieceData[35].location % 9;
+        Ky = Math.floor(pieceData[35].location / 9);
       }
-      break;
-    }
-  }
-  for (let j = 0; j < 81; ++j) {
-    if (judge !== null) break;
-    if (boardData[j].cssClass === 'hand') {
-      judge = true;
-      if (evolution(i)) {
-        boardData[i].type = boardData[j].type + 'e';
-      } else {
-        boardData[i].type = boardData[j].type;
+      let Ex = pieceData[scope].location % 9;
+      let Ey = Math.floor(pieceData[scope].location / 9);
+      let dx = Kx - Ex;
+      if (dx !== 0) dx = dx / Math.abs(dx);
+      let dy = Ky - Ey;
+      if (dy !== 0) dy = dy / Math.abs(dy);
+      console.log(Kx, Ky, Ex, Ey, dx, dy);
+      if (dx1 === dx && dy1 === dy) {
+        let moveRule;
+        for (const data of moveRules[pieceData[scope].type]['true']) {
+          if (data[0] === dx && data[1] === dy) {
+            moveRule = data;
+            break;
+          }
+        }
+        while (true) {
+          between.push(9 * Ey + Ex);
+          Ex += moveRule[0];
+          Ey += moveRule[1];
+          if (Ex === Kx && Ey === Ky) break;
+        }
       }
-      boardData[i].owner = boardData[j].owner;
-      boardData[j].type = null;
-      boardData[j].owner = null;
-      break;
     }
-  }
-}
 
-//持ち駒から歩が打てる列を配列にして返す
-function doubleP() {
-  let dataMe = [];
-  let dataYou = [];
-  boardData.forEach((data, i) => {
-    if (data.type === 'P') {
-      dataMe.push(i % 9);
-    } else if (data.type === 'p') {
-      dataYou.push(i % 9);
-    }
-  });
-  return { me: dataMe, you: dataYou };
-}
+    //その走りごまのtruemoveableに味方の王がいるマスがあって　（王手になる可能性のある走りごまを特定）
+    //その走りごまと自玉の間のマスをリストアップ
 
-boardElement.addEventListener('click', (event) => {
-  const cell = event.target;
-
-  if (!cell.dataset.index) return;
-
-  const index = parseInt(cell.dataset.index);
-
-  teban = counter % 2 === 1 ? 'sente' : 'gote';
-
-  if (boardData[index].cssClass === 'plane') {
-    if (boardData[index].type === null || zyunban[boardData[index].owner] !== teban) {
-      cssPlane();
-      cssMotiplane();
+    if (boardData[index].piece.type === 'k' || boardData[index].piece.type === 'Q') {
+      pieceAttack[boardData[index].piece.pieceIndex]['moveable'].forEach((data, _) => {
+        if (
+          (boardData[index].piece.owner === 'playerA' && attackB[data] === 0) ||
+          (boardData[index].piece.owner === 'playerB' && attackA[data] === 0)
+        ) {
+          boardData[data].cssClass = 'move';
+          boardData[data].cssUpdate();
+          move.push(data);
+          console.log(move);
+        }
+      });
+    } else if (between.length !== 0) {
+      pieceAttack[boardData[index].piece.pieceIndex]['moveable'].forEach((data, _) => {
+        if (between.includes(data)) {
+          boardData[data].cssClass = 'move';
+          boardData[data].cssUpdate();
+          move.push(data);
+        }
+      });
     } else {
-      cssShade();
-      boardData[index].cssClass = 'hand';
-      movable(index);
-      cssMotiplane();
+      pieceAttack[boardData[index].piece.pieceIndex]['moveable'].forEach((data, _) => {
+        boardData[data].cssClass = 'move';
+        boardData[data].cssUpdate();
+        move.push(data);
+      });
     }
-  } else if (boardData[index].cssClass === 'shade') {
-    cssPlane();
-  } else if (boardData[index].cssClass === 'hand') {
-    cssPlane();
-  } else if (boardData[index].cssClass === 'move') {
-    //ここに持ち駒判定
-    if (boardData[index].type !== null) {
-      rob(index);
-    }
-    //ここからしたtransfer関数　　持ち駒から置くのにも対応できるように
-    transfer(index);
-    //ここになり判定
-    cssMotiplane();
-    cssPlane();
-    ++counter;
   }
-  updateBoard();
-  updateMotiBoard();
-});
 
-yourBoard.addEventListener('click', (event) => {
-  const cell = event.target;
+  //console.log(attackA);
 
-  if (!cell.dataset.index) return;
+  return [hand, move];
+}
 
-  const index = parseInt(cell.dataset.index);
+function attackUpdate(i) {
+  const piece = boardData[i].piece;
+  if (piece.condition === 'fight') {
+    if (piece.owner === 'playerA') {
+      attackA.forEach((data, index) => {
+        data.includes(piece.index);
+      });
+    }
+  }
+}
 
-  if (motiDataY[index].number === 0) return;
+let AorB;
+const playerChange = { playerA: 'playerB', playerB: 'playerA' };
 
-  teban = counter % 2 === 1 ? 'sente' : 'gote';
+//const exceptMoveRules = { false: [], true: [[]] };
 
-  if (zyunban[motiDataY[index].owner] === teban) {
-    if (motiDataY[index].cssClass === 'moti-plane') {
-      cssMotiplane();
-      motiDataY[index].cssClass = 'moti-hand';
-      cssMove();
-      boardData.forEach((data, i) => {
-        if (data.owner !== null) {
-          data.cssClass = 'plane';
-          return;
-        }
-        if (nextMoveable(motiDataY[index].type, i).next === false) {
-          data.cssClass = 'plane';
-          return;
-        }
-        //二歩判定
-        if (motiDataY[index].type === 'p' && doubleP()['you'].includes(i % 9)) {
-          data.cssClass = 'plane';
-          return;
+let update = []; //pieceAttackを更新する駒のpieceIndex
+
+export function transfer(index, hand) {
+  //成るかならないか
+  AorB = boardData[hand].piece.owner === 'playerA' ? [0, 1, 2] : [6, 7, 8];
+
+  if (
+    boardData[hand].piece.condition === 'fight' &&
+    boardData[hand].piece.evolution === false &&
+    boardData[hand].piece.type !== 'G' &&
+    boardData[hand].piece.type !== 'K' &&
+    boardData[hand].piece.type !== 'Q' &&
+    (AorB.includes(Math.floor(index / 9)) || AorB.includes(Math.floor(hand / 9))) &&
+    confirm('成りますか？') === true
+  )
+    boardData[hand].piece.evolution = true;
+
+  //駒がいたら取る
+  if (boardData[index].piece !== null) {
+    //持ち駒送りだけ
+    AorB = boardData[index].piece.owner === 'playerA' ? 'torestB' : 'torestA';
+    boardData[index].piece.owner = playerChange[boardData[index].piece.owner];
+    boardData[index].piece.condition = 'rest';
+    boardData[index].piece.evolution = false;
+    boardData[moveRules[boardData[index].piece.type][AorB]].intoPiece(boardData[index].piece);
+    boardData[index].outofPiece(boardData[index].piece);
+  } else if (hand > 80) boardData[hand].piece.condition = 'fight';
+
+  boardData[hand].piece.location = index;
+  boardData[index].intoPiece(boardData[hand].piece);
+  boardData[hand].outofPiece();
+
+  pieceData.forEach((_, i) => {
+    pieceAttack[i]['moveable'] = [];
+    pieceAttack[i]['truemoveable'] = [];
+    pieceAttack[i]['overlapSame'] = [];
+    pieceAttack[i]['overlapOppose'] = [];
+  });
+
+  pieceData.forEach((data, _) => {
+    if (data.condition === 'fight') nextMoveable(data, false, false); //ここ解決する
+  });
+
+  for (let i = 0; i < 81; ++i) {
+    attackA[i] = 0;
+    attackB[i] = 0;
+  }
+
+  for (let i = 0; i < 9; ++i) {
+    attackPA[i] = 0;
+    attackPB[i] = 0;
+  }
+
+  for (let i = 0; i < 81; ++i) {
+    if (boardData[i].piece === null) continue;
+    const indexx = boardData[i].piece.pieceIndex;
+    if (boardData[i].piece.type === 'P') {
+      if (boardData[i].piece.owner === 'playerA') attackPA[boardData[i].cellIndex % 9] += 1;
+      else if (boardData[i].piece.owner === 'playerB') attackPB[boardData[i].cellIndex % 9] += 1;
+    }
+    pieceAttack[indexx]['moveable'].forEach((data, _) => {
+      if (boardData[i].piece.owner === 'playerA') attackA[data] += 1;
+      if (boardData[i].piece.owner === 'playerB') attackB[data] += 1;
+    });
+  }
+  //console.log(attackPA, attackPB);
+}
+
+export function pile(teban) {
+  let move = [];
+  const retainPieceAttack = structuredClone(pieceAttack);
+  for (let data of pieceData) {
+    //if (data.owner !== teban) continue;
+    const indexmoveable = [...retainPieceAttack[data.pieceIndex]['moveable']];
+    //console.log(indexmoveable);
+    //console.log(pieceAttack[data.pieceIndex]['moveable']);
+
+    for (const d of indexmoveable) {
+      pieceAttack.forEach((dd, _) => {
+        dd['moveable'] = [];
+        dd['truemoveable'] = [];
+        dd['overlapSame'] = [];
+        dd['overlapOppose'] = [];
+      });
+      const retainToPiece = boardData[d].piece === null ? null : { ...boardData[d].piece };
+      //console.log(retainToPiece, boardData[d].piece);
+
+      if (retainToPiece !== null) boardData[d].piece.condition = 'rest';
+      const retainLocation = data.location;
+      data.location = boardData[d].cellIndex;
+      boardData[d].piece = data;
+      data = null;
+      pieceData.forEach((dd, _) => {
+        if (dd.owner !== teban && dd.condition === 'fight') {
+          nextMoveable(dd, false, false);
+          //console.log(dd);
         }
       });
-    } else if (motiDataY[index].cssClass === 'moti-hand') {
-      cssMotiplane();
-      cssPlane();
+      //console.log(
+      //pieceAttack[pieceData[35].pieceIndex]['overlapOppose'],
+      //pieceAttack[pieceData[4].pieceIndex]['overlapOppose']
+      //);
+      if (
+        (teban === 'playerA' && pieceAttack[pieceData[35].pieceIndex]['overlapOppose'].length === 0) ||
+        (teban === 'playerB' && pieceAttack[pieceData[4].pieceIndex]['overlapOppose'].length === 0)
+      ) {
+        move.push(d);
+      }
+
+      data = boardData[d].piece;
+      data.location = retainLocation;
+      boardData[d].piece = retainToPiece;
+      if (retainToPiece !== null) boardData[d].piece.condition = 'fight';
+
+      if (move.length > 0) {
+        pieceAttack = structuredClone(retainPieceAttack);
+
+        return true;
+      }
     }
-    updateMotiBoard();
-    updateBoard();
   }
-});
 
-myBoard.addEventListener('click', (event) => {
-  const cell = event.target;
+  pieceAttack.forEach((d, _) => {
+    d['moveable'] = [];
+    d['truemoveable'] = [];
+    d['overlapSame'] = [];
+    d['overlapOppose'] = [];
+  });
 
-  if (!cell.dataset.index) return;
-
-  const index = parseInt(cell.dataset.index);
-
-  if (motiDataM[index].number === 0) return;
-
-  teban = counter % 2 === 1 ? 'sente' : 'gote';
-
-  if (zyunban[motiDataM[index].owner] === teban) {
-    if (motiDataM[index].cssClass === 'moti-plane') {
-      cssMotiplane();
-      motiDataM[index].cssClass = 'moti-hand';
-      cssMove();
-      boardData.forEach((data, i) => {
-        if (data.owner !== null) {
-          data.cssClass = 'plane';
-          return;
-        }
-        if (nextMoveable(motiDataM[index].type, i).next === false) {
-          data.cssClass = 'plane';
-          return;
-        }
-        //二歩判定
-        if (motiDataM[index].type === 'P' && doubleP()['me'].includes(i % 9)) {
-          data.cssClass = 'plane';
-          return;
-        }
-      });
-    } else if (motiDataM[index].cssClass === 'moti-hand') {
-      cssMotiplane();
-      cssPlane();
-    }
-    updateMotiBoard();
-    updateBoard();
-  }
-});
+  pieceData.forEach((d, _) => nextMoveable(d, false, false));
+  console.log('hi', pieceAttack);
+  return false;
+}
