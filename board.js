@@ -161,8 +161,6 @@ initialRestA.forEach(() => {
   cell.element.dataset.index = cell.cellIndex;
 });
 
-const start = performance.now(); // 計測開始
-
 //最初のpieceRelation更新
 pieceData.forEach((data, _) => {
   nextMoveable(data, false, false);
@@ -193,11 +191,6 @@ for (let i = 0; i < 81; ++i) {
     else if (boardData[i].piece.owner === 'playerB') attackB[data] += 1;
   });
 }
-
-console.log(pieceAttack, attackPA, attackPB);
-
-const end = performance.now(); // 計測終了
-console.log(`処理時間: ${end - start}ms`); //nextmoveable分ける？
 
 //引数　そのコマ
 function nextMoveable(Piece, TorF1, TorF2) {
@@ -332,7 +325,7 @@ export function selectPiece(index, kinghand) {
         d['overlapOppose'] = [];
       });
 
-      console.log(boardData[data].piece, boardData[index].piece);
+      //console.log(boardData[data].piece, boardData[index].piece);
 
       const retainToPiece = boardData[data].piece === null ? null : pieceData[boardData[data].piece.pieceIndex];
       if (retainToPiece !== null) boardData[data].piece.condition = 'rest';
@@ -341,16 +334,16 @@ export function selectPiece(index, kinghand) {
       boardData[data].piece = boardData[index].piece;
       boardData[index].piece = null;
 
-      console.log(boardData[data].piece, boardData[index].piece);
+      //console.log(boardData[data].piece, boardData[index].piece);
 
       pieceData.forEach((d, _) => {
         if (d.condition === 'fight') nextMoveable(d, false, false);
       });
 
-      console.log(
-        pieceAttack[pieceData[35].pieceIndex]['overlapOppose'],
-        pieceAttack[pieceData[4].pieceIndex]['overlapOppose']
-      );
+      //console.log(
+        //pieceAttack[pieceData[35].pieceIndex]['overlapOppose'],
+        //pieceAttack[pieceData[4].pieceIndex]['overlapOppose']
+      //);
 
       if (
         (observer.teban === 'playerA' && pieceAttack[pieceData[35].pieceIndex]['overlapOppose'].length === 0) ||
@@ -363,7 +356,7 @@ export function selectPiece(index, kinghand) {
       boardData[index].piece.location = retainLocation;
       boardData[data].piece = retainToPiece;
       if (retainToPiece !== null) boardData[data].piece.condition = 'fight';
-      console.log(boardData[data].piece, boardData[index].piece);
+      //console.log(boardData[data].piece, boardData[index].piece);
     });
 
     pieceAttack.forEach((d, _) => {
@@ -381,7 +374,7 @@ export function selectPiece(index, kinghand) {
       boardData[data].cssUpdate();
     });
 
-    console.log(pieceAttack[boardData[index].piece.pieceIndex]['moveable']);
+    //console.log(pieceAttack[boardData[index].piece.pieceIndex]['moveable']);
   } else if (kinghand === false) {
     let aim = [];
 
@@ -414,7 +407,7 @@ export function selectPiece(index, kinghand) {
           dy1 = Py - Ey;
           if (dy1 !== 0) dy1 = dy1 / Math.abs(dy1);
 
-          console.log(Px, Py, Ex, Ey, dx1, dy1);
+          //console.log(Px, Py, Ex, Ey, dx1, dy1);
 
           break parent;
         }
@@ -439,7 +432,7 @@ export function selectPiece(index, kinghand) {
       if (dx !== 0) dx = dx / Math.abs(dx);
       let dy = Ky - Ey;
       if (dy !== 0) dy = dy / Math.abs(dy);
-      console.log(Kx, Ky, Ex, Ey, dx, dy);
+      //console.log(Kx, Ky, Ex, Ey, dx, dy);
       if (dx1 === dx && dy1 === dy) {
         let moveRule;
         for (const data of moveRules[pieceData[scope].type]['true']) {
