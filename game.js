@@ -23,15 +23,17 @@ class Game {
 }
 
 export const observer = new Game();
+console.log(sente);
 
 let hand = null; //cssがhandになっているマスのindex
 let move = []; //cssがmoveになっているマスのindex
 
 let kinghand = false;
 
-import { boardData, pieceData, attackA, attackB, selectPiece, transfer, pile } from './board.js';
+import { boardData, pieceData, pieceAttack, selectPiece, transfer, pile } from './board.js';
 
 gameBoard.addEventListener('click', (event) => {
+  //console.log('click');
   if (observer.end === true) return;
 
   const cell = event.target;
@@ -50,6 +52,8 @@ gameBoard.addEventListener('click', (event) => {
   } else if (boardData[index].cssClass === 'hand') {
     cssPlane();
   } else if (boardData[index].cssClass === 'move') {
+    const start = performance.now(); // 計測開始
+
     transfer(index, hand);
     cssPlane();
     //王手判定
@@ -59,6 +63,8 @@ gameBoard.addEventListener('click', (event) => {
 
     if (kinghand === true && pile(observer.teban) === false) observer.end = true;
 
+    const end = performance.now(); // 計測終了
+    console.log(`処理時間: ${end - start}ms`); //nextmoveable分ける？
   }
 });
 
@@ -78,7 +84,9 @@ function cssPlane() {
 }
 
 function aimK() {
-  if (observer.teban === 'playerA' && attackA[pieceData[4].location] !== 0) kinghand = true;
-  else if (observer.teban === 'playerB' && attackB[pieceData[35].location] !== 0) kinghand = true;
+  if (observer.teban === 'playerA' && pieceAttack[pieceData[4].pieceIndex]['overlapOppose'].length > 0) kinghand = true;
+  else if (observer.teban === 'playerB' && pieceAttack[pieceData[35].pieceIndex]['overlapOppose'].length > 0)
+    kinghand = true;
   else kinghand = false;
+  //console.log(kinghand);
 }
