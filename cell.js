@@ -17,6 +17,7 @@ export class Cell {
   }
 
   outofPiece(piece) {
+    //配列を作るtorestAとかは0～36に
     this.qty -= 1;
     if (this.qty === 0) this.piece = null;
     this.render();
@@ -27,6 +28,8 @@ export class Cell {
     this.element.innerHTML = '';
     if (this.piece === null) return;
     this.element.appendChild(this.piece.draw());
+    if (this.qty <= 1) return;
+    this.element.appendChild(this.number());
   }
 
   //cssClassを描画し直す
@@ -34,11 +37,10 @@ export class Cell {
     this.element.className = this.cssClass;
   }
 
-  getX() {
-    return this.index % 9;
-  }
-
-  getY() {
-    return Math.floor(this.index / 9);
+  number() {
+    const number = document.createElement('div');
+    number.classList.add('number');
+    number.textContent = `${this.qty}`;
+    return number;
   }
 }
