@@ -115,10 +115,10 @@ export const moveRules = {
   B: {
     false: [],
     true: [
+      [-1, -1],
       [1, 1],
       [1, -1],
-      [-1, 1],
-      [-1, -1]
+      [-1, 1]
     ],
     torestA: 103,
     torestB: 84
