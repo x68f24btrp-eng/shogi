@@ -118,14 +118,12 @@ import { Cell } from './cell.js';
 import { Piece } from './piece.js';
 import { moveRules } from './piece.js';
 
-let pieceAttack = []; //{ moveable: [], truemoveable: [], overlapSama: [], overlapOppose: [] }
+export let pieceAttack = []; //{ moveable: [], truemoveable: [], overlapSama: [], overlapOppose: [] }
 export let pieceData = []; //pieceIndexの順番にpieceクラスのインスタンスが入っている
 export let boardData = []; //cellIndexの順番にcellクラスのインスタンスが入っている
-export let attackA = []; //81マスそれぞれにあるAの駒の利きの数
-export let attackB = []; //81マスそれぞれにあるBの駒の利きの数
-let count = 0;
 let attackPA = [];
 let attackPB = [];
+let restData = [];
 
 //将棋盤とそれ上の駒表示
 initialType.forEach((data, _) => {
@@ -135,12 +133,16 @@ initialType.forEach((data, _) => {
   cell.cssUpdate();
   cell.element.dataset.index = cell.cellIndex;
   if (data === null) return;
-  const piece = new Piece(cell.cellIndex, count, data.toUpperCase(), /[A-Z]/.test(data) ? 'playerA' : 'playerB');
+  const piece = new Piece(
+    cell.cellIndex,
+    pieceData.length,
+    data.toUpperCase(),
+    /[A-Z]/.test(data) ? 'playerA' : 'playerB'
+  );
   pieceAttack.push({ moveable: [], truemoveable: [], overlapSame: [], overlapOppose: [] });
   piece.condition = 'fight';
   cell.intoPiece(piece);
   pieceData.push(piece);
-  ++count;
 });
 
 //持ち駒置き場を描画　ここでは駒は描画しない（まだimg作ってない）
@@ -150,6 +152,7 @@ initialRestB.forEach(() => {
   restBoardB.appendChild(cell.element);
   cell.cssUpdate();
   cell.element.dataset.index = cell.cellIndex;
+  restData.push([]);
 });
 
 //持ち駒置き場を描画　ここでは駒は描画しない（まだimg作ってない）
@@ -159,18 +162,14 @@ initialRestA.forEach(() => {
   restBoardA.appendChild(cell.element);
   cell.cssUpdate();
   cell.element.dataset.index = cell.cellIndex;
+  restData.push([]);
 });
+
+const start = performance.now(); // 計測開始
 
 //最初のpieceRelation更新
 pieceData.forEach((data, _) => {
   nextMoveable(data, false, false);
-});
-
-//利きを計測するために要素を81個つめる
-boardData.forEach((data, i) => {
-  if (i > 80) return;
-  attackA.push(0);
-  attackB.push(0);
 });
 
 for (let i = 0; i < 9; ++i) {
@@ -186,92 +185,70 @@ for (let i = 0; i < 81; ++i) {
     if (boardData[i].piece.owner === 'playerA') attackPA[boardData[i].cellIndex % 9] += 1;
     else if (boardData[i].piece.owner === 'playerB') attackPB[boardData[i].cellIndex % 9] += 1;
   }
-  pieceAttack[index]['moveable'].forEach((data, i) => {
-    if (boardData[i].piece.owner === 'playerA') attackA[data] += 1;
-    else if (boardData[i].piece.owner === 'playerB') attackB[data] += 1;
-  });
 }
 
-//引数　そのコマ
-function nextMoveable(Piece, TorF1, TorF2) {
-  let slide = 'false';
-  let overlap = 0;
-  const type = Piece.evolution === true ? Piece.type + 'e' : Piece.type;
-  let attack = pieceAttack[Piece.pieceIndex];
-  if (TorF1 === true) {
-    attack['moveable'] = [];
-    attack['truemoveable'] = [];
-  }
-  if (TorF2 === true) {
-    attack['overlapSame'] = [];
-    attack['overlapOppose'] = [];
-  }
+//console.log(boardData, pieceData, pieceAttack, restData, attackPA, attackPB);
 
+const end = performance.now(); // 計測終了
+console.log(`処理時間: ${end - start}ms`); //nextmoveable分ける？
+
+//引数　そのコマ
+function nextMoveable(Piece) {
+  let slide = 'false';
+  const type = Piece.evolution === true ? Piece.type + 'e' : Piece.type;
+  let attackData = pieceAttack[Piece.pieceIndex];
   let x = Piece.location % 9;
   let y = Math.floor(Piece.location / 9);
+
   if (Piece.condition === 'fight') {
     for (let j = 0; j < 2; ++j) {
       moveRules[type][slide].forEach((data, _) => {
-        overlap = 0;
+        let overlap = 0;
         let l = Piece.owner === 'playerA' ? 1 : -1;
+        let targetx = x;
+        let targety = y;
         while (true) {
-          const targetx = x + l * data[0];
-          const targety = y + l * data[1];
-
-          //console.log(x, y, l, data[1], targetx, targety);
+          targetx += l * data[0];
+          targety += l * data[1];
 
           if (targetx < 0 || 8 < targetx || targety < 0 || 8 < targety) {
             break;
           }
           const targeti = targety * 9 + targetx;
+          const targetPiece = boardData[targeti].piece;
 
-          if (boardData[targeti].piece === null) {
-            if (overlap === 0) attack['moveable'].push(targeti);
-            else if (overlap > 0) attack['truemoveable'].push(targeti);
-            if (slide === 'false') break;
-            if (l > 0) ++l;
-            else if (l < 0) --l;
-            continue;
-          }
-
-          if (boardData[targeti].piece.owner === Piece.owner) {
-            if (overlap === 0) pieceAttack[boardData[targeti].piece.pieceIndex]['overlapSame'].push(Piece.pieceIndex);
-            else if (overlap > 0) attack['truemoveable'].push(targeti);
+          if (targetPiece === null) {
+            if (overlap === 0) attackData['moveable'].push(targeti);
+            else if (overlap > 0) attackData['truemoveable'].push(targeti);
 
             if (slide === 'false') break;
-            ++overlap;
-            if (overlap === 2) break;
-            if (l > 0) ++l;
-            else if (l < 0) --l;
-            continue;
-
-            //break;
-          }
-
-          if (boardData[targeti].piece.owner !== Piece.owner) {
+          } else {
             if (overlap === 0) {
-              attack['moveable'].push(targeti);
-              pieceAttack[boardData[targeti].piece.pieceIndex]['overlapOppose'].push(Piece.pieceIndex);
-            } else if (overlap > 0) attack['truemoveable'].push(targeti);
+              if (targetPiece.owner === Piece.owner) {
+                pieceAttack[targetPiece.pieceIndex]['overlapSame'].push(Piece.pieceIndex);
+              } else if (targetPiece.owner !== Piece.owner) {
+                attackData['moveable'].push(targeti);
+                pieceAttack[targetPiece.pieceIndex]['overlapOppose'].push(Piece.pieceIndex);
+              }
+            } else attackData['truemoveable'].push(targeti);
 
             if (slide === 'false') break;
             ++overlap;
             if (overlap === 2) break;
-            if (l > 0) ++l;
-            else if (l < 0) --l;
-            continue;
-
-            //break;
           }
         }
       });
       slide = 'true';
     }
   } else if (Piece.condition === 'rest') {
+    attackData['moveable'] = [];
+    attackData['truemoveable'] = [];
+    attackData['overlapSame'] = [];
+    attackData['overlapOppose'] = [];
     let l = Piece.owner === 'playerA' ? 1 : -1;
     for (let j = 0; j < 81; ++j) {
       if (boardData[j].piece !== null) continue;
-      let slide = 'false';
+      slide = 'false';
       let x = j % 9;
       let y = Math.floor(j / 9);
       if (type === 'P') {
@@ -280,14 +257,12 @@ function nextMoveable(Piece, TorF1, TorF2) {
       }
       parent: for (let t = 0; t < 2; ++t) {
         const data = moveRules[type][slide];
-        for (let f = 0; f < data.length; ++f) {
-          const targetx = x + l * data[f][0];
-          const targety = y + l * data[f][1];
-
-          //console.log(x, y, l, data[f][1], targetx, targety);
+        for (const d of data) {
+          const targetx = x + l * d[0];
+          const targety = y + l * d[1];
 
           if (0 <= targetx && targetx <= 8 && 0 <= targety && targety <= 8) {
-            attack['moveable'].push(j);
+            attackData['moveable'].push(j);
             break parent;
           }
         }
@@ -303,19 +278,21 @@ export function selectPiece(index, kinghand) {
   boardData[index].cssClass = 'hand';
   boardData[index].cssUpdate();
   const hand = index;
+  let handPiece = boardData[index].piece;
 
-  //nextMoveable(boardData[index].piece, true);
-  //console.log(pieceAttack[boardData[index].piece.pieceIndex]);
-
-  //console.log(boardData[index].piece.condition);
-
-  if (boardData[index].piece.condition === 'rest') nextMoveable(boardData[index].piece, true, true);
+  if (handPiece.condition === 'rest') nextMoveable(handPiece);
 
   let move = [];
+  let aim = [];
 
-  if (kinghand === true) {
-    const indexmoveable = [...pieceAttack[boardData[index].piece.pieceIndex]['moveable']];
-    console.log(pieceAttack[boardData[index].piece.pieceIndex]['moveable']);
+  pieceAttack[handPiece.pieceIndex]['overlapOppose'].forEach((data, i) => {
+    if (moveRules[pieceData[data].type].true.length !== 0) {
+      aim.push(data);
+    }
+  });
+
+  if (kinghand === true || aim.length > 0 || handPiece.type === 'K' || handPiece.type === 'Q') {
+    const indexmoveable = [...pieceAttack[handPiece.pieceIndex]['moveable']];
 
     indexmoveable.forEach((data, i) => {
       pieceAttack.forEach((d, _) => {
@@ -325,25 +302,20 @@ export function selectPiece(index, kinghand) {
         d['overlapOppose'] = [];
       });
 
-      //console.log(boardData[data].piece, boardData[index].piece);
+      let targetPiece = boardData[data].piece;
 
-      const retainToPiece = boardData[data].piece === null ? null : pieceData[boardData[data].piece.pieceIndex];
-      if (retainToPiece !== null) boardData[data].piece.condition = 'rest';
-      const retainLocation = boardData[index].piece.location;
-      boardData[index].piece.location = boardData[data].cellIndex;
-      boardData[data].piece = boardData[index].piece;
+      const retainTargetPiece = targetPiece === null ? null : targetPiece;
+      //console.log(retainTargetPiece === null ? null : { ...targetPiece });
+      if (retainTargetPiece !== null) targetPiece.condition = 'rest';
+      const retainLocation = handPiece.location;
+      handPiece.location = boardData[data].cellIndex;
+      //配列そのものを書き換えないといけないからリモコンを渡す操作ではだめ 左辺は値を代入される本体が来ないと
+      boardData[data].piece = handPiece;
       boardData[index].piece = null;
 
-      //console.log(boardData[data].piece, boardData[index].piece);
-
       pieceData.forEach((d, _) => {
-        if (d.condition === 'fight') nextMoveable(d, false, false);
+        if (d.condition === 'fight') nextMoveable(d);
       });
-
-      //console.log(
-        //pieceAttack[pieceData[35].pieceIndex]['overlapOppose'],
-        //pieceAttack[pieceData[4].pieceIndex]['overlapOppose']
-      //);
 
       if (
         (observer.teban === 'playerA' && pieceAttack[pieceData[35].pieceIndex]['overlapOppose'].length === 0) ||
@@ -352,204 +324,96 @@ export function selectPiece(index, kinghand) {
         move.push(data);
       }
 
+      //移動させた駒を戻す
       boardData[index].piece = boardData[data].piece;
+      //上とは違い変数に前に代入した値を戻す
       boardData[index].piece.location = retainLocation;
-      boardData[data].piece = retainToPiece;
-      if (retainToPiece !== null) boardData[data].piece.condition = 'fight';
-      //console.log(boardData[data].piece, boardData[index].piece);
+      boardData[data].piece = retainTargetPiece;
+      if (retainTargetPiece !== null) targetPiece.condition = 'fight';
+      //console.log(retainTargetPiece === null ? null : { ...targetPiece });
     });
 
-    pieceAttack.forEach((d, _) => {
-      d['moveable'] = [];
-      d['truemoveable'] = [];
-      d['overlapSame'] = [];
-      d['overlapOppose'] = [];
+    pieceAttack.forEach((data, _) => {
+      data['moveable'] = [];
+      data['truemoveable'] = [];
+      data['overlapSame'] = [];
+      data['overlapOppose'] = [];
     });
 
-    pieceData.forEach((d, _) => nextMoveable(d, false, false));
+    pieceData.forEach((data, _) => nextMoveable(data));
+  } else move = pieceAttack[handPiece.pieceIndex]['moveable'];
 
-    console.log(move);
-    move.forEach((data, _) => {
-      boardData[data].cssClass = 'move';
-      boardData[data].cssUpdate();
-    });
-
-    //console.log(pieceAttack[boardData[index].piece.pieceIndex]['moveable']);
-  } else if (kinghand === false) {
-    let aim = [];
-
-    pieceAttack[boardData[index].piece.pieceIndex]['overlapOppose'].forEach((data, i) => {
-      if (moveRules[pieceData[data].type].true.length !== 0) {
-        aim.push(data);
-      }
-    });
-
-    let scope;
-    let dx1;
-    let dy1;
-
-    parent: for (const d of aim) {
-      for (const dd of pieceAttack[d]['truemoveable']) {
-        if (
-          (boardData[index].piece.owner === 'playerA' && pieceData[35].location === dd) ||
-          (boardData[index].piece.owner === 'playerB' && pieceData[4].location === dd)
-        ) {
-          scope = d;
-
-          let Ex = pieceData[scope].location % 9;
-          let Ey = Math.floor(pieceData[scope].location / 9);
-
-          let Px = pieceData[index].location % 9;
-          let Py = Math.floor(pieceData[index].location / 9);
-
-          dx1 = Px - Ex;
-          if (dx1 !== 0) dx1 = dx1 / Math.abs(dx1);
-          dy1 = Py - Ey;
-          if (dy1 !== 0) dy1 = dy1 / Math.abs(dy1);
-
-          //console.log(Px, Py, Ex, Ey, dx1, dy1);
-
-          break parent;
-        }
-      }
-    }
-
-    let between = [];
-
-    if (scope !== undefined && scope !== null) {
-      let Kx;
-      let Ky;
-      if (pieceData[scope].owner === 'playerA') {
-        Kx = pieceData[4].location % 9;
-        Ky = Math.floor(pieceData[4].location / 9);
-      } else if (pieceData[scope].owner === 'playerB') {
-        Kx = pieceData[35].location % 9;
-        Ky = Math.floor(pieceData[35].location / 9);
-      }
-      let Ex = pieceData[scope].location % 9;
-      let Ey = Math.floor(pieceData[scope].location / 9);
-      let dx = Kx - Ex;
-      if (dx !== 0) dx = dx / Math.abs(dx);
-      let dy = Ky - Ey;
-      if (dy !== 0) dy = dy / Math.abs(dy);
-      //console.log(Kx, Ky, Ex, Ey, dx, dy);
-      if (dx1 === dx && dy1 === dy) {
-        let moveRule;
-        for (const data of moveRules[pieceData[scope].type]['true']) {
-          if (data[0] === dx && data[1] === dy) {
-            moveRule = data;
-            break;
-          }
-        }
-        while (true) {
-          between.push(9 * Ey + Ex);
-          Ex += moveRule[0];
-          Ey += moveRule[1];
-          if (Ex === Kx && Ey === Ky) break;
-        }
-      }
-    }
-
-    //その走りごまのtruemoveableに味方の王がいるマスがあって　（王手になる可能性のある走りごまを特定）
-    //その走りごまと自玉の間のマスをリストアップ
-
-    if (boardData[index].piece.type === 'k' || boardData[index].piece.type === 'Q') {
-      pieceAttack[boardData[index].piece.pieceIndex]['moveable'].forEach((data, _) => {
-        if (
-          (boardData[index].piece.owner === 'playerA' && attackB[data] === 0) ||
-          (boardData[index].piece.owner === 'playerB' && attackA[data] === 0)
-        ) {
-          boardData[data].cssClass = 'move';
-          boardData[data].cssUpdate();
-          move.push(data);
-          console.log(move);
-        }
-      });
-    } else if (between.length !== 0) {
-      pieceAttack[boardData[index].piece.pieceIndex]['moveable'].forEach((data, _) => {
-        if (between.includes(data)) {
-          boardData[data].cssClass = 'move';
-          boardData[data].cssUpdate();
-          move.push(data);
-        }
-      });
-    } else {
-      pieceAttack[boardData[index].piece.pieceIndex]['moveable'].forEach((data, _) => {
-        boardData[data].cssClass = 'move';
-        boardData[data].cssUpdate();
-        move.push(data);
-      });
-    }
-  }
-
-  //console.log(attackA);
+  move.forEach((data, _) => {
+    boardData[data].cssClass = 'move';
+    boardData[data].cssUpdate();
+  });
 
   return [hand, move];
 }
 
-function attackUpdate(i) {
-  const piece = boardData[i].piece;
-  if (piece.condition === 'fight') {
-    if (piece.owner === 'playerA') {
-      attackA.forEach((data, index) => {
-        data.includes(piece.index);
-      });
-    }
-  }
-}
-
-let AorB;
+let AorB; //こいつを拡張
 const playerChange = { playerA: 'playerB', playerB: 'playerA' };
 
 //const exceptMoveRules = { false: [], true: [[]] };
 
-let update = []; //pieceAttackを更新する駒のpieceIndex
+//let update = []; //pieceAttackを更新する駒のpieceIndex
 
 export function transfer(index, hand) {
+  const handPiece = boardData[hand].piece;
+  const targetPiece = boardData[index].piece;
   //成るかならないか
-  AorB = boardData[hand].piece.owner === 'playerA' ? [0, 1, 2] : [6, 7, 8];
+  AorB = handPiece.owner === 'playerA' ? [0, 1, 2] : [6, 7, 8];
 
   if (
-    boardData[hand].piece.condition === 'fight' &&
-    boardData[hand].piece.evolution === false &&
-    boardData[hand].piece.type !== 'G' &&
-    boardData[hand].piece.type !== 'K' &&
-    boardData[hand].piece.type !== 'Q' &&
+    handPiece.condition === 'fight' &&
+    handPiece.evolution === false &&
+    handPiece.type !== 'G' &&
+    handPiece.type !== 'K' &&
+    handPiece.type !== 'Q' &&
     (AorB.includes(Math.floor(index / 9)) || AorB.includes(Math.floor(hand / 9))) &&
     confirm('成りますか？') === true
   )
-    boardData[hand].piece.evolution = true;
+    handPiece.evolution = true;
 
   //駒がいたら取る
-  if (boardData[index].piece !== null) {
+  if (targetPiece !== null) {
     //持ち駒送りだけ
-    AorB = boardData[index].piece.owner === 'playerA' ? 'torestB' : 'torestA';
-    boardData[index].piece.owner = playerChange[boardData[index].piece.owner];
-    boardData[index].piece.condition = 'rest';
-    boardData[index].piece.evolution = false;
-    boardData[moveRules[boardData[index].piece.type][AorB]].intoPiece(boardData[index].piece);
-    boardData[index].outofPiece(boardData[index].piece);
-  } else if (hand > 80) boardData[hand].piece.condition = 'fight';
+    AorB = targetPiece.owner === 'playerA' ? 'torestB' : 'torestA';
+    restData[moveRules[targetPiece.type][AorB] - 80].push(targetPiece);
+    targetPiece.owner = playerChange[targetPiece.owner];
+    targetPiece.condition = 'rest';
+    targetPiece.evolution = false;
+    boardData[moveRules[targetPiece.type][AorB]].intoPiece(targetPiece);
+    boardData[index].outofPiece();
+  }
 
-  boardData[hand].piece.location = index;
-  boardData[index].intoPiece(boardData[hand].piece);
-  boardData[hand].outofPiece();
+  if (hand > 80) {
+    restData[hand - 80][0].condition = 'fight';
+    boardData[index].intoPiece(restData[hand - 80][0]);
+    boardData[index].piece.location = index;
+    restData[hand - 80].shift();
+    boardData[hand].outofPiece();
+    if (restData[hand - 80].length > 0) {
+      boardData[hand].piece = restData[hand - 80][0];
+    }
+  } else {
+    handPiece.location = index;
+    boardData[index].intoPiece(handPiece);
+    boardData[hand].outofPiece();
+  }
 
-  pieceData.forEach((_, i) => {
-    pieceAttack[i]['moveable'] = [];
-    pieceAttack[i]['truemoveable'] = [];
-    pieceAttack[i]['overlapSame'] = [];
-    pieceAttack[i]['overlapOppose'] = [];
+  //もうデータ上でも描画上でも動かし終わったから動かした後の駒をfightに変える
+
+  pieceAttack.forEach((data, _) => {
+    data['moveable'] = [];
+    data['truemoveable'] = [];
+    data['overlapSame'] = [];
+    data['overlapOppose'] = [];
   });
 
   pieceData.forEach((data, _) => {
-    if (data.condition === 'fight') nextMoveable(data, false, false); //ここ解決する
+    if (data.condition === 'fight') nextMoveable(data);
   });
-
-  for (let i = 0; i < 81; ++i) {
-    attackA[i] = 0;
-    attackB[i] = 0;
-  }
 
   for (let i = 0; i < 9; ++i) {
     attackPA[i] = 0;
@@ -558,27 +422,19 @@ export function transfer(index, hand) {
 
   for (let i = 0; i < 81; ++i) {
     if (boardData[i].piece === null) continue;
-    const indexx = boardData[i].piece.pieceIndex;
     if (boardData[i].piece.type === 'P') {
       if (boardData[i].piece.owner === 'playerA') attackPA[boardData[i].cellIndex % 9] += 1;
       else if (boardData[i].piece.owner === 'playerB') attackPB[boardData[i].cellIndex % 9] += 1;
     }
-    pieceAttack[indexx]['moveable'].forEach((data, _) => {
-      if (boardData[i].piece.owner === 'playerA') attackA[data] += 1;
-      if (boardData[i].piece.owner === 'playerB') attackB[data] += 1;
-    });
   }
-  //console.log(attackPA, attackPB);
 }
 
 export function pile(teban) {
   let move = [];
   const retainPieceAttack = structuredClone(pieceAttack);
-  for (let data of pieceData) {
-    //if (data.owner !== teban) continue;
-    const indexmoveable = [...retainPieceAttack[data.pieceIndex]['moveable']];
-    //console.log(indexmoveable);
-    //console.log(pieceAttack[data.pieceIndex]['moveable']);
+  for (let i = 0; i < pieceData.length; ++i) {
+    if (pieceData[i].owner !== teban) continue;
+    const indexmoveable = structuredClone(retainPieceAttack[pieceData[i].pieceIndex]['moveable']);
 
     for (const d of indexmoveable) {
       pieceAttack.forEach((dd, _) => {
@@ -587,39 +443,49 @@ export function pile(teban) {
         dd['overlapSame'] = [];
         dd['overlapOppose'] = [];
       });
-      const retainToPiece = boardData[d].piece === null ? null : { ...boardData[d].piece };
-      //console.log(retainToPiece, boardData[d].piece);
 
-      if (retainToPiece !== null) boardData[d].piece.condition = 'rest';
-      const retainLocation = data.location;
-      data.location = boardData[d].cellIndex;
-      boardData[d].piece = data;
-      data = null;
+      const retainTargetPiece = boardData[d].piece === null ? null : boardData[d].piece;
+      if (retainTargetPiece !== null) boardData[d].piece.condition = 'rest';
+      const retainLocation = pieceData[i].location;
+      boardData[pieceData[i].location].piece = null;
+      pieceData[i].location = boardData[d].cellIndex;
+      boardData[d].piece = pieceData[i];
+      //nullになっちゃってるけど玉にもnextmoveableしたい
       pieceData.forEach((dd, _) => {
-        if (dd.owner !== teban && dd.condition === 'fight') {
-          nextMoveable(dd, false, false);
-          //console.log(dd);
+        if (dd !== null && dd.owner !== teban && dd.condition === 'fight') {
+          nextMoveable(dd);
         }
       });
-      //console.log(
-      //pieceAttack[pieceData[35].pieceIndex]['overlapOppose'],
-      //pieceAttack[pieceData[4].pieceIndex]['overlapOppose']
-      //);
-      if (
-        (teban === 'playerA' && pieceAttack[pieceData[35].pieceIndex]['overlapOppose'].length === 0) ||
-        (teban === 'playerB' && pieceAttack[pieceData[4].pieceIndex]['overlapOppose'].length === 0)
-      ) {
-        move.push(d);
+
+      if (pieceData[i] !== null) {
+        if (
+          (teban === 'playerA' && pieceAttack[pieceData[35].pieceIndex]['overlapOppose'].length === 0) ||
+          (teban === 'playerB' && pieceAttack[pieceData[4].pieceIndex]['overlapOppose'].length === 0)
+        ) {
+          move.push(d);
+        }
+      } else {
+        if (
+          (boardData[d].piece.type === 'K' || boardData[d].piece.type === 'Q') &&
+          pieceAttack[boardData[d].piece.pieceIndex]['overlapOppose'].length === 0
+        )
+          move.push(d);
       }
 
-      data = boardData[d].piece;
-      data.location = retainLocation;
-      boardData[d].piece = retainToPiece;
-      if (retainToPiece !== null) boardData[d].piece.condition = 'fight';
+      pieceData[i].location = retainLocation;
+      boardData[pieceData[i].location].piece = boardData[d].piece;
+      boardData[d].piece = retainTargetPiece;
+      if (retainTargetPiece !== null) boardData[d].piece.condition = 'fight';
 
       if (move.length > 0) {
-        pieceAttack = structuredClone(retainPieceAttack);
+        pieceAttack.forEach((dd, _) => {
+          dd['moveable'] = [];
+          dd['truemoveable'] = [];
+          dd['overlapSame'] = [];
+          dd['overlapOppose'] = [];
+        });
 
+        pieceData.forEach((dd, _) => nextMoveable(dd));
         return true;
       }
     }
@@ -632,7 +498,7 @@ export function pile(teban) {
     d['overlapOppose'] = [];
   });
 
-  pieceData.forEach((d, _) => nextMoveable(d, false, false));
-  console.log('hi', pieceAttack);
+  pieceData.forEach((d, _) => nextMoveable(d));
+  console.log('詰み');
   return false;
 }
